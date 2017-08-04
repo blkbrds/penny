@@ -1,1 +1,1 @@
-worker: SlackBot --config:app.env=heroku
+worker: SlackBot --config:bot-config.token=$BOT_TOKEN
