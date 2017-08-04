@@ -7,8 +7,8 @@ import TLS
 setupClient()
 
 let VERSION = "0.2.0"
-let PENNY = "U1PF52H9C"
-let GENERAL = "C0N67MJ83"
+let PENNY = "B6J21CA58"
+let GENERAL = "C4NDAAEHF"
 
 let configDirectory = workingDirectory + "Config/"
 let config = try Settings.Config(
@@ -80,7 +80,7 @@ try WebSocket.connect(to: webSocketURL) { ws in
                                             threadTs: threadTs)
                 try ws.send(response)
             }
-        } else if trimmed.hasPrefix("<@U1PF52H9C>") || trimmed.hasSuffix("<@U1PF52H9C>") {
+        } else if trimmed.hasPrefix("<@\(PENNY)>") || trimmed.hasSuffix("<@\(PENNY)>") {
             if trimmed.lowercased().contains(any: "hello", "hey", "hiya", "hi", "aloha", "sup") {
                 let response = SlackMessage(to: channel,
                                             text: "Hey <@\(fromId)> 👋",
@@ -113,7 +113,7 @@ try WebSocket.connect(to: webSocketURL) { ws in
                     .filter({
                         $0.hasPrefix("<@")
                         && $0.hasSuffix(">")
-                        && $0 != "<@U1PF52H9C>"
+                        && $0 != "<@\(PENNY)>"
                     })
                     .map({ $0.characters.dropFirst(2).dropLast() })
                     .first
