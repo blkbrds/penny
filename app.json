@@ -1,5 +1,5 @@
 {
-  "name": "SlackBot",
+  "name": "Penny",
   "description": "A template for starting a SlackBot with Vapor. Say 'hello' to your bot in Slack after building.",
   "logo": "https://pbs.twimg.com/profile_images/718295325937692673/lEJPNXoO.jpg",
   "repository": "https://github.com/qutheory/slack-bot",
