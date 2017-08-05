@@ -90,16 +90,16 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
                     return
             }
 
-            if validChannels.contains(channel) {
+//            if validChannels.contains(channel) {
                 try credit(ws, toId, channel: channel, threadTs: threadTs)
-            } else {
-                let response = SlackMessage(
-                    to: channel,
-                    text: "Sorry, I only work in public channels. Try thanking <@\(user)> in <#\(GENERAL)>",
-                    threadTs: threadTs
-                )
-                try ws.send(response)
-            }
+//            } else {
+//                let response = SlackMessage(
+//                    to: channel,
+//                    text: "Sorry, I only work in public channels. Try thanking in <#\(GENERAL)>",
+//                    threadTs: threadTs
+//                )
+//                try ws.send(response)
+//            }
         } else if trimmed.hasPrefix("<@\(PENNY)>") || trimmed.hasSuffix("<@\(PENNY)>") {
             if trimmed.lowercased().contains(any: "hello", "hey", "hiya", "hi", "aloha", "sup") {
                 let response = SlackMessage(to: channel,
