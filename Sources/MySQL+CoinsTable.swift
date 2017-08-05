@@ -13,7 +13,11 @@ import MySQL
 extension MySQL.Connection {
     func addCoins(for user: String) throws -> Int {
         let command = "INSERT INTO coins (user, coins) VALUES(?, 1) ON DUPLICATE KEY UPDATE coins = coins + 1;"
-        try execute(command, [user])
+        do {
+            try execute(command, [user])
+        } catch {
+            print("Error: \(error.localizedDescription)")
+        }
         return try coinsCount(for: user)
     }
 

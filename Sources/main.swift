@@ -4,18 +4,17 @@ import Foundation
 import MySQL
 import TLS
 
-
 let VERSION = "0.3.0"
-let PENNY = "B6J21CA58"
+let PENNY = "U6K4XJYPR"
 let GENERAL = "C4NDAAEHF"
 
 let configDirectory = workingDirectory + "Config/"
 
 let config = try Config(
     prioritized: [
-        .commandLine,
-        .directory(root: configDirectory + "secrets"),
-        .directory(root: configDirectory + "production")
+            .commandLine,
+            .directory(root: configDirectory + "secrets"),
+            .directory(root: configDirectory + "production")
     ]
 )
 
@@ -61,25 +60,12 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
     print("Connected ...")
 
     ws.onText = { ws, text in
+        print("Received message: \(text)")
+
         let event = try JSON(bytes: text.utf8.array)
         let last3Seconds = NSDate().timeIntervalSince1970 - 3
-        
-        let threadTs = event["thread_ts"]?.string
 
-        // reactions
-        if
-            event["type"]?.string == "reaction_added",
-            let reaction = event["reaction"]?.string,
-            reaction == "coin" || reaction == "8bit-coin",
-            let item = event["item"],
-            let timestamp = item["ts"]?.string,
-            let channel = item["channel"]?.string,
-            let fromUser = event["user"]?.string,
-            let user = event["item_user"]?.string,
-            fromUser != user
-        {
-            try credit(ws, user, channel: channel, threadTs: threadTs, printError: false)
-        }
+        let threadTs = event["thread_ts"]?.string
 
         guard
             let channel = event["channel"]?.string,
@@ -87,15 +73,22 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
             let fromId = event["user"]?.string,
             let ts = event["ts"].flatMap({ $0.string.flatMap({ Double($0) }) }),
             ts >= last3Seconds
-        else { return }
+            else {
+                print("1")
+                return
+        }
 
         let trimmed = message.trimmedWhitespace()
+
         if trimmed.hasPrefix("<@") && trimmed.hasCoinSuffix { // leads w/ user
             guard
                 let toId = trimmed.components(separatedBy: "<@").last?.components(separatedBy: ">").first,
                 toId != fromId,
                 fromId != PENNY
-                else { return }
+                else {
+                    print("2")
+                    return
+            }
 
             if validChannels.contains(channel) {
                 try credit(ws, toId, channel: channel, threadTs: threadTs)
@@ -139,8 +132,8 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
                     .lazy
                     .filter({
                         $0.hasPrefix("<@")
-                        && $0.hasSuffix(">")
-                        && $0 != "<@\(PENNY)>"
+                            && $0.hasSuffix(">")
+                            && $0 != "<@\(PENNY)>"
                     })
                     .map({ $0.characters.dropFirst(2).dropLast() })
                     .first
@@ -154,6 +147,11 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
                 try ws.send(response)
             }
         }
+    }
+
+    ws.onPing = { ws, bytes in
+        try ws.pong(bytes)
+        print("Pong...")
     }
 
     ws.onClose = { ws, _, _, _ in
