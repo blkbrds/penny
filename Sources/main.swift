@@ -75,6 +75,8 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
 
         let trimmed = message.trimmedWhitespace()
 
+        print("Message: \(trimmed)")
+
         if trimmed.hasPrefix("<@") && trimmed.hasCoinSuffix { // leads w/ user
             guard
                 let toId = trimmed.components(separatedBy: "<@").last?.components(separatedBy: ">").first,

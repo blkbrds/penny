@@ -16,9 +16,14 @@ extension MySQL.Connection {
         do {
             try execute(command, [user])
         } catch {
-            print("Error: \(error.localizedDescription)")
+            print("INSERT Error: \(error.localizedDescription)")
         }
-        return try coinsCount(for: user)
+        do {
+            return try coinsCount(for: user)
+        } catch {
+            print("SELECT Error: \(error.localizedDescription)")
+        }
+        return 0
     }
 
     func coinsCount(for user: String) throws -> Int {
