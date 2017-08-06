@@ -1,7 +1,0 @@
-{
-  "user": "$MYSQL_USER:vapor",
-  "pass": "$MYSQL_PASS:vapor@pass",
-  "host": "$MYSQL_HOST:localhost",
-  "port": "$MYSQL_PORT:3306",
-  "database": "$MYSQL_DB:vapor"
-}

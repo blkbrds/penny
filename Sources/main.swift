@@ -57,11 +57,9 @@ func credit(_ ws: WebSocket, _ user: String, channel: String, threadTs: String?,
 }
 
 try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
-    print("Connected ...")
+    print("Connected.")
 
     ws.onText = { ws, text in
-        print("Received message: \(text)")
-
         let event = try JSON(bytes: text.utf8.array)
         let last3Seconds = NSDate().timeIntervalSince1970 - 3
 
@@ -73,10 +71,7 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
             let fromId = event["user"]?.string,
             let ts = event["ts"].flatMap({ $0.string.flatMap({ Double($0) }) }),
             ts >= last3Seconds
-            else {
-                print("1")
-                return
-        }
+            else { return }
 
         let trimmed = message.trimmedWhitespace()
 
@@ -85,10 +80,7 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
                 let toId = trimmed.components(separatedBy: "<@").last?.components(separatedBy: ">").first,
                 toId != fromId,
                 fromId != PENNY
-                else {
-                    print("2")
-                    return
-            }
+                else { return }
 
 //            if validChannels.contains(channel) {
                 try credit(ws, toId, channel: channel, threadTs: threadTs)
@@ -149,12 +141,7 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
         }
     }
 
-    ws.onPing = { ws, bytes in
-        try ws.pong(bytes)
-        print("Pong...")
-    }
-
     ws.onClose = { ws, _, _, _ in
-        print("\n[CLOSED]\n")
+        print("\nClosed.\n")
     }
 }
