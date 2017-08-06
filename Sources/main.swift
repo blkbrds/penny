@@ -46,12 +46,21 @@ guard let webSocketURL = rtmResponse.data["url"]?.string else { throw BotError.i
 
 func credit(_ ws: WebSocket, _ user: String, channel: String, threadTs: String?, printError: Bool = true) throws {
     if true {
-        let total = try mysql.addCoins(for: user)
-        let response = SlackMessage(
-            to: channel,
-            text: "<@\(user)> has \(total) :coin:",
-            threadTs: threadTs
-        )
+        var response: SlackMessage
+        do {
+            let total = try mysql.addCoins(for: user)
+            response = SlackMessage(
+                to: channel,
+                text: "<@\(user)> has \(total) :coin:",
+                threadTs: threadTs
+            )
+        } catch {
+            response = SlackMessage(
+                to: channel,
+                text: "```\(error.localizedDescription)```",
+                threadTs: threadTs
+            )
+        }
         try ws.send(response)
     }
 }
@@ -85,7 +94,7 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
                 else { return }
 
 //            if validChannels.contains(channel) {
-                try credit(ws, toId, channel: channel, threadTs: threadTs)
+            try credit(ws, toId, channel: channel, threadTs: threadTs)
 //            } else {
 //                let response = SlackMessage(
 //                    to: channel,
