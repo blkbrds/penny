@@ -5,8 +5,7 @@ import MySQL
 import TLS
 
 let VERSION = "0.3.0"
-let PENNY = "U6K4XJYPR"
-let GENERAL = "C4NDAAEHF"
+let generalId = "C4NDAAEHF"
 
 let configDirectory = workingDirectory + "Config/"
 
@@ -20,6 +19,8 @@ let config = try Config(
 
 // Config variables
 guard let token = config["bot-config", "token"]?.string else { throw BotError.missingConfig }
+guard let pennyId = config["bot-config", "pennyId"]?.string else { throw BotError.missingConfig }
+guard let generalId = config["bot-config", "generalId"]?.string else { throw BotError.missingConfig }
 
 guard let user = config["mysql", "user"]?.string, let pass = config["mysql", "pass"]?.string else { throw BotError.missingMySQLCredentials }
 
@@ -90,7 +91,7 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
             guard
                 let toId = trimmed.components(separatedBy: "<@").last?.components(separatedBy: ">").first,
                 toId != fromId,
-                fromId != PENNY
+                fromId != pennyId
                 else { return }
 
 //            if validChannels.contains(channel) {
@@ -98,12 +99,12 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
 //            } else {
 //                let response = SlackMessage(
 //                    to: channel,
-//                    text: "Sorry, I only work in public channels. Try thanking in <#\(GENERAL)>",
+//                    text: "Sorry, I only work in public channels. Try thanking in <#\(generalId)>",
 //                    threadTs: threadTs
 //                )
 //                try ws.send(response)
 //            }
-        } else if trimmed.hasPrefix("<@\(PENNY)>") || trimmed.hasSuffix("<@\(PENNY)>") {
+        } else if trimmed.hasPrefix("<@\(pennyId)>") || trimmed.hasSuffix("<@\(pennyId)>") {
             if trimmed.lowercased().contains(any: "hello", "hey", "hiya", "hi", "aloha", "sup") {
                 let response = SlackMessage(to: channel,
                                             text: "Hey <@\(fromId)> 👋",
@@ -136,7 +137,7 @@ try EngineClient.factory.socket.connect(to: webSocketURL) { ws in
                     .filter({
                         $0.hasPrefix("<@")
                             && $0.hasSuffix(">")
-                            && $0 != "<@\(PENNY)>"
+                            && $0 != "<@\(pennyId)>"
                     })
                     .map({ $0.characters.dropFirst(2).dropLast() })
                     .first
