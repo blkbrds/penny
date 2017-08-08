@@ -5,7 +5,6 @@ import MySQL
 import TLS
 
 let VERSION = "0.3.0"
-let generalId = "C4NDAAEHF"
 
 let configDirectory = workingDirectory + "Config/"
 
@@ -19,8 +18,8 @@ let config = try Config(
 
 // Config variables
 guard let token = config["bot-config", "token"]?.string else { throw BotError.missingConfig }
-guard let pennyId = config["bot-config", "pennyId"]?.string else { throw BotError.missingConfig }
-guard let generalId = config["bot-config", "generalId"]?.string else { throw BotError.missingConfig }
+guard let pennyId = config["bot-config", "penny"]?.string else { throw BotError.missingConfig }
+guard let generalId = config["bot-config", "general"]?.string else { throw BotError.missingConfig }
 
 guard let user = config["mysql", "user"]?.string, let pass = config["mysql", "pass"]?.string else { throw BotError.missingMySQLCredentials }
 
